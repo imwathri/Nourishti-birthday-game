@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nourishti Birthday Quest</title>
+  <style>
+    body {
+      margin: 0;
+      background: #ffe4f0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+    }
+    #gameCanvas {
+      background: linear-gradient(#ffe4f0, #fffafc);
+      display: block;
+      margin: 0 auto;
+      border: 5px solid #ffb6c1;
+      box-shadow: 0 0 30px pink;
+    }
+    #startScreen, #endScreen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(255, 228, 240, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 10;
+    }
+    .button {
+      background: #ff8ebf;
+      color: white;
+      font-size: 2rem;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      box-shadow: 0 0 10px #ff8ebf;
+      cursor: pointer;
+    }
+    #endMessage {
+      font-size: 2rem;
+      color: #ff4d88;
+      margin-top: 20px;
+    }
+    #joystickContainer {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background-color: rgba(255,182,193,0.4);
+      touch-action: none;
+      z-index: 5;
+    }
+    #joystick {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 60px; height: 60px;
+      margin: -30px 0 0 -30px;
+      background-color: #ff69b4;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div id="startScreen">
+    <h1>🎉 Tap to Begin 🎈</h1>
+    <button class="button" onclick="startGame()">Tap to Begin</button>
+  </div>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div id="endScreen" style="display:none;">
+    <h1>🎉 Joyeux anniversaire Nourishti 🎈</h1>
+    <div id="endMessage">Tu es une fleur rare et une pizza parfaite 🍕🌸</div>
+  </div>
+
+  <div id="joystickContainer" ontouchstart="startJoystick(event)" ontouchmove="moveJoystick(event)" ontouchend="endJoystick()">
+    <div id="joystick"></div>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="nourishti_theme.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="jingle">
+    <source src="birthday_jingle.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const player = { x: 400, y: 300, size: 20, color: "#ff69b4" };
+    let flowers = [], pizzas = [], collected = 0;
+    let dx = 0, dy = 0;
+    let active = false;
+
+    function randomPos() {
+      return Math.floor(Math.random() * 760 + 20);
+    }
+
+    function createItems() {
+      for (let i = 0; i < 5; i++) {
+        flowers.push({ x: randomPos(), y: randomPos(), type: "flower" });
+        pizzas.push({ x: randomPos(), y: randomPos(), type: "pizza" });
+      }
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = player.color;
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawItems() {
+      for (let item of flowers.concat(pizzas)) {
+        ctx.fillStyle = item.type === "flower" ? "#ffb6c1" : "#ffcc99";
+        ctx.beginPath();
+        ctx.arc(item.x, item.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function checkCollision() {
+      for (let list of [flowers, pizzas]) {
+        for (let i = list.length - 1; i >= 0; i--) {
+          let item = list[i];
+          const dx = item.x - player.x;
+          const dy = item.y - player.y;
+          if (Math.sqrt(dx * dx + dy * dy) < 20) {
+            list.splice(i, 1);
+            collected++;
+            if (collected === 10) endGame();
+          }
+        }
+      }
+    }
+
+    function endGame() {
+      document.getElementById("endScreen").style.display = "flex";
+      document.getElementById("jingle").play();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPlayer();
+      drawItems();
+      checkCollision();
+    }
+
+    function update() {
+      player.x += dx * 2;
+      player.y += dy * 2;
+      player.x = Math.max(0, Math.min(canvas.width, player.x));
+      player.y = Math.max(0, Math.min(canvas.height, player.y));
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("bgMusic").play();
+      createItems();
+      gameLoop();
+    }
+
+    function startJoystick(e) {
+      active = true;
+      moveJoystick(e);
+    }
+
+    function moveJoystick(e) {
+      if (!active) return;
+      const touch = e.touches[0];
+      const rect = document.getElementById("joystickContainer").getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      dx = (touch.clientX - centerX) / 40;
+      dy = (touch.clientY - centerY) / 40;
+    }
+
+    function endJoystick() {
+      active = false;
+      dx = 0;
+      dy = 0;
+    }
+  </script>
+</body>
+</html>
