@@ -1,196 +1,89 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nourishti Birthday Quest</title>
+  <meta charset="UTF-8">
+  <title>Joyeux anniversaire Nourishti</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
-      background: #ffe4f0;
+      background: linear-gradient(to bottom, #ffe6f0, #fff0f5);
       font-family: 'Comic Sans MS', cursive, sans-serif;
-      overflow: hidden;
-    }
-    #gameCanvas {
-      background: linear-gradient(#ffe4f0, #fffafc);
-      display: block;
-      margin: 0 auto;
-      border: 5px solid #ffb6c1;
-      box-shadow: 0 0 30px pink;
-    }
-    #startScreen, #endScreen {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background-color: rgba(255, 228, 240, 0.95);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      overflow-x: hidden;
+      color: #d63384;
       text-align: center;
-      z-index: 10;
     }
-    .button {
-      background: #ff8ebf;
-      color: white;
-      font-size: 2rem;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 50px;
-      box-shadow: 0 0 10px #ff8ebf;
-      cursor: pointer;
+    h1 {
+      margin-top: 2em;
+      font-size: 3em;
+      animation: fadeIn 3s ease-in-out;
     }
-    #endMessage {
-      font-size: 2rem;
-      color: #ff4d88;
-      margin-top: 20px;
+    p {
+      max-width: 700px;
+      margin: 2em auto;
+      font-size: 1.4em;
+      line-height: 1.8;
+      padding: 0 20px;
+      animation: fadeIn 4s ease-in-out 1s forwards;
+      opacity: 0;
     }
-    #joystickContainer {
+    .petal {
       position: absolute;
-      bottom: 30px;
-      left: 30px;
-      width: 150px;
-      height: 150px;
+      width: 20px;
+      height: 20px;
+      background: pink;
       border-radius: 50%;
-      background-color: rgba(255,182,193,0.4);
-      touch-action: none;
-      z-index: 5;
+      opacity: 0.6;
+      animation: fall 10s linear infinite;
     }
-    #joystick {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 60px; height: 60px;
-      margin: -30px 0 0 -30px;
-      background-color: #ff69b4;
-      border-radius: 50%;
+    @keyframes fall {
+      0% { transform: translateY(-100px); opacity: 0.8; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <div id="startScreen">
-    <h1>🎉 Tap to Begin 🎈</h1>
-    <button class="button" onclick="startGame()">Tap to Begin</button>
-  </div>
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
-  <div id="endScreen" style="display:none;">
-    <h1>🎉 Joyeux anniversaire Nourishti 🎈</h1>
-    <div id="endMessage">Tu es une fleur rare et une pizza parfaite 🍕🌸</div>
-  </div>
 
-  <div id="joystickContainer" ontouchstart="startJoystick(event)" ontouchmove="moveJoystick(event)" ontouchend="endJoystick()">
-    <div id="joystick"></div>
-  </div>
+  <h1>🎂 Joyeux anniversaire Nourishti 🎈</h1>
+  <p id="message">
+    Aujourd’hui, j’ai voulu faire quelque chose d’un peu fou, un peu tendre, un peu magique.  
+    J’ai voulu t’offrir une petite fenêtre rien qu’à toi, une bulle rose où les fleurs tombent doucement,  
+    où la musique réchauffe, et où mes mots peuvent enfin te dire ce que tu représentes pour moi.  
+    <br><br>
+    Tu es cette lumière douce qui éclaire même les jours gris,  
+    ce rire qui adoucit toutes les tempêtes, cette présence qui fait que le monde semble moins vide.  
+    Tu es ma fleur rare et ma pizza parfaite.  
+    <br><br>
+    Ce site, c’est un petit bout de cœur, pour une grande partie du mien.  
+    Merci d’exister. Merci d’être toi. Et surtout…  
+    <br><br>
+    🎉 JOYEUX ANNIVERSAIRE NOURISHTI 🎉  
+    <br>
+    Que cette année te porte encore plus haut, encore plus loin, avec toujours plus d’amour et de douceur.
+  </p>
 
-  <audio id="bgMusic" loop>
-    <source src="nourishti_theme.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="jingle">
-    <source src="birthday_jingle.mp3" type="audio/mpeg" />
+  <audio autoplay loop>
+    <source src="nourishti_theme.mp3" type="audio/mpeg">
+    Ton navigateur ne supporte pas l'audio 😢
   </audio>
 
   <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const player = { x: 400, y: 300, size: 20, color: "#ff69b4" };
-    let flowers = [], pizzas = [], collected = 0;
-    let dx = 0, dy = 0;
-    let active = false;
-
-    function randomPos() {
-      return Math.floor(Math.random() * 760 + 20);
+    for (let i = 0; i < 30; i++) {
+      let petal = document.createElement('div');
+      petal.className = 'petal';
+      petal.style.left = Math.random() * 100 + "vw";
+      petal.style.animationDuration = (5 + Math.random() * 5) + "s";
+      petal.style.width = petal.style.height = (10 + Math.random() * 10) + "px";
+      document.body.appendChild(petal);
     }
 
-    function createItems() {
-      for (let i = 0; i < 5; i++) {
-        flowers.push({ x: randomPos(), y: randomPos(), type: "flower" });
-        pizzas.push({ x: randomPos(), y: randomPos(), type: "pizza" });
-      }
-    }
-
-    function drawPlayer() {
-      ctx.fillStyle = player.color;
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function drawItems() {
-      for (let item of flowers.concat(pizzas)) {
-        ctx.fillStyle = item.type === "flower" ? "#ffb6c1" : "#ffcc99";
-        ctx.beginPath();
-        ctx.arc(item.x, item.y, 10, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function checkCollision() {
-      for (let list of [flowers, pizzas]) {
-        for (let i = list.length - 1; i >= 0; i--) {
-          let item = list[i];
-          const dx = item.x - player.x;
-          const dy = item.y - player.y;
-          if (Math.sqrt(dx * dx + dy * dy) < 20) {
-            list.splice(i, 1);
-            collected++;
-            if (collected === 10) endGame();
-          }
-        }
-      }
-    }
-
-    function endGame() {
-      document.getElementById("endScreen").style.display = "flex";
-      document.getElementById("jingle").play();
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawPlayer();
-      drawItems();
-      checkCollision();
-    }
-
-    function update() {
-      player.x += dx * 2;
-      player.y += dy * 2;
-      player.x = Math.max(0, Math.min(canvas.width, player.x));
-      player.y = Math.max(0, Math.min(canvas.height, player.y));
-    }
-
-    function gameLoop() {
-      update();
-      draw();
-      requestAnimationFrame(gameLoop);
-    }
-
-    function startGame() {
-      document.getElementById("startScreen").style.display = "none";
-      document.getElementById("bgMusic").play();
-      createItems();
-      gameLoop();
-    }
-
-    function startJoystick(e) {
-      active = true;
-      moveJoystick(e);
-    }
-
-    function moveJoystick(e) {
-      if (!active) return;
-      const touch = e.touches[0];
-      const rect = document.getElementById("joystickContainer").getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      dx = (touch.clientX - centerX) / 40;
-      dy = (touch.clientY - centerY) / 40;
-    }
-
-    function endJoystick() {
-      active = false;
-      dx = 0;
-      dy = 0;
-    }
+    window.onload = () => {
+      document.getElementById('message').style.opacity = 1;
+    };
   </script>
 </body>
 </html>
